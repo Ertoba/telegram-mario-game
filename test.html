@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <div id="output"></div>
+    <script>
+        const output = document.getElementById('output');
+
+        // Test 1: Load config
+        output.innerHTML += '<h2>Test 1: Config.js</h2>';
+        const script1 = document.createElement('script');
+        script1.src = 'config.js';
+        script1.onload = () => {
+            output.innerHTML += '✅ Config loaded<br>';
+            output.innerHTML += 'GameConfig exists: ' + (typeof GameConfig !== 'undefined') + '<br>';
+        };
+        script1.onerror = () => {
+            output.innerHTML += '❌ Config failed to load<br>';
+        };
+        document.head.appendChild(script1);
+
+        // Test 2: Load Phaser
+        setTimeout(() => {
+            output.innerHTML += '<h2>Test 2: Phaser CDN</h2>';
+            const script2 = document.createElement('script');
+            script2.src = 'https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js';
+            script2.onload = () => {
+                output.innerHTML += '✅ Phaser loaded<br>';
+                output.innerHTML += 'Phaser exists: ' + (typeof Phaser !== 'undefined') + '<br>';
+                output.innerHTML += 'Phaser version: ' + (Phaser ? Phaser.VERSION : 'N/A') + '<br>';
+            };
+            script2.onerror = () => {
+                output.innerHTML += '❌ Phaser failed to load<br>';
+            };
+            document.head.appendChild(script2);
+        }, 500);
+
+        // Test 3: Check all source files
+        setTimeout(() => {
+            output.innerHTML += '<h2>Test 3: Source Files</h2>';
+            const files = [
+                'src/scenes/BootScene.js',
+                'src/scenes/MenuScene.js',
+                'src/scenes/GameScene.js',
+                'src/scenes/BossScene.js',
+                'src/scenes/UIScene.js',
+                'src/scenes/TransitionScene.js',
+                'src/objects/Player.js',
+                'src/objects/Enemy.js',
+                'src/objects/Dragon.js',
+                'src/objects/MovingPlatform.js',
+                'src/objects/TouchControls.js',
+                'src/utils/AudioManager.js',
+                'src/utils/GameState.js',
+                'src/main.js'
+            ];
+
+            files.forEach(file => {
+                fetch(file)
+                    .then(response => {
+                        if (response.ok) {
+                            output.innerHTML += `✅ ${file}<br>`;
+                        } else {
+                            output.innerHTML += `❌ ${file} (${response.status})<br>`;
+                        }
+                    })
+                    .catch(err => {
+                        output.innerHTML += `❌ ${file} (fetch error)<br>`;
+                    });
+            });
+        }, 1000);
+    </script>
+</body>
+</html>
