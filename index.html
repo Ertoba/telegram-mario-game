@@ -94,26 +94,62 @@
     <!-- Load Phaser 3 from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
 
-    <!-- Load game scenes -->
-    <script src="src/scenes/BootScene.js"></script>
-    <script src="src/scenes/MenuScene.js"></script>
-    <script src="src/scenes/GameScene.js"></script>
-    <script src="src/scenes/BossScene.js"></script>
-    <script src="src/scenes/UIScene.js"></script>
-    <script src="src/scenes/TransitionScene.js"></script>
+    <!-- Wait for Phaser to load, then load game files -->
+    <script>
+        // Wait for Phaser to be defined
+        if (typeof Phaser === 'undefined') {
+            document.getElementById('loading').innerHTML = '<div style="color: red;">Failed to load Phaser library</div>';
+        } else {
+            console.log('Phaser loaded, version:', Phaser.VERSION);
 
-    <!-- Load game objects -->
-    <script src="src/objects/Player.js"></script>
-    <script src="src/objects/Enemy.js"></script>
-    <script src="src/objects/Dragon.js"></script>
-    <script src="src/objects/MovingPlatform.js"></script>
-    <script src="src/objects/TouchControls.js"></script>
+            // Load all game scripts in order
+            const scripts = [
+                'src/utils/AudioManager.js',
+                'src/utils/GameState.js',
+                'src/objects/Player.js',
+                'src/objects/Enemy.js',
+                'src/objects/MovingPlatform.js',
+                'src/objects/TouchControls.js',
+                'src/objects/Dragon.js',
+                'src/scenes/BootScene.js',
+                'src/scenes/MenuScene.js',
+                'src/scenes/GameScene.js',
+                'src/scenes/BossScene.js',
+                'src/scenes/UIScene.js',
+                'src/scenes/TransitionScene.js',
+                'src/main.js'
+            ];
 
-    <!-- Load utilities -->
-    <script src="src/utils/AudioManager.js"></script>
-    <script src="src/utils/GameState.js"></script>
+            let loadedCount = 0;
 
-    <!-- Main game initialization -->
-    <script src="src/main.js"></script>
+            function loadNextScript() {
+                if (loadedCount >= scripts.length) {
+                    console.log('All scripts loaded!');
+                    return;
+                }
+
+                const script = document.createElement('script');
+                script.src = scripts[loadedCount];
+                script.onload = () => {
+                    console.log('✓ Loaded:', scripts[loadedCount]);
+                    loadedCount++;
+                    loadNextScript();
+                };
+                script.onerror = () => {
+                    console.error('✗ Failed to load:', scripts[loadedCount]);
+                    document.getElementById('loading').innerHTML = `
+                        <div style="color: red; padding: 20px;">
+                            <h2>Failed to load game file:</h2>
+                            <p>${scripts[loadedCount]}</p>
+                            <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px;">Reload</button>
+                        </div>
+                    `;
+                };
+                document.body.appendChild(script);
+            }
+
+            loadNextScript();
+        }
+    </script>
 </body>
 </html>
