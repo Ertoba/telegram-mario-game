@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Telegram Mario Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -10,90 +10,141 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            position: fixed;
             overflow: hidden;
             background: linear-gradient(to bottom, #5c94fc, #87ceeb);
             font-family: 'Arial', sans-serif;
         }
 
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
         #gameCanvas {
             display: block;
-            margin: 0 auto;
             background: #5c94fc;
             touch-action: none;
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain;
         }
 
         #gameInfo {
-            position: absolute;
-            top: 10px;
+            position: fixed;
+            top: env(safe-area-inset-top, 10px);
             left: 10px;
             color: white;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             z-index: 10;
+            line-height: 1.4;
         }
 
         #controls {
-            position: absolute;
-            bottom: 20px;
+            position: fixed;
+            bottom: calc(env(safe-area-inset-bottom, 0px) + 15px);
+            left: 0;
+            right: 0;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 15px;
             z-index: 10;
         }
 
         .control-btn {
-            width: 70px;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 3px solid white;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 2px solid white;
             border-radius: 50%;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
             touch-action: none;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0.95);
         }
 
         .control-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         #gameOver {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 30px;
+            padding: 25px;
             border-radius: 10px;
             text-align: center;
             display: none;
             z-index: 20;
+            max-width: 90%;
         }
 
         #gameOver h2 {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        #gameOver p {
+            margin: 8px 0;
+            font-size: 16px;
         }
 
         #restartBtn {
             background: #4CAF50;
             color: white;
             border: none;
-            padding: 10px 30px;
-            font-size: 18px;
-            border-radius: 5px;
+            padding: 12px 35px;
+            font-size: 16px;
+            border-radius: 8px;
             cursor: pointer;
             margin-top: 15px;
+            touch-action: manipulation;
+        }
+
+        #restartBtn:active {
+            background: #45a049;
+        }
+
+        @media (max-width: 400px) {
+            .control-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 18px;
+            }
+
+            #gameInfo {
+                font-size: 14px;
+            }
+
+            .control-group {
+                gap: 10px;
+            }
         }
     </style>
 </head>

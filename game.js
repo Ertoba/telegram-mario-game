@@ -7,9 +7,30 @@ tg.enableClosingConfirmation();
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Set canvas size
-canvas.width = Math.min(window.innerWidth, 800);
-canvas.height = Math.min(window.innerHeight, 600);
+// Set canvas size to match device screen
+function resizeCanvas() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // Set actual canvas resolution
+    canvas.width = width;
+    canvas.height = height;
+
+    // Reinitialize game objects for new size
+    if (typeof initGameObjects === 'function') {
+        initGameObjects();
+    }
+}
+
+// Initial size
+resizeCanvas();
+
+// Handle orientation changes (but don't resize during gameplay to avoid disruption)
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(resizeCanvas, 300);
+});
 
 // Game variables
 let score = 0;
@@ -19,8 +40,8 @@ let keys = {};
 
 // Player object
 const player = {
-    x: 100,
-    y: 300,
+    x: 50,
+    y: 100,
     width: 32,
     height: 48,
     velocityX: 0,
@@ -36,35 +57,65 @@ const gravity = 0.5;
 const friction = 0.8;
 const maxVelocityY = 15;
 
-// Platforms array
-const platforms = [
-    { x: 0, y: canvas.height - 50, width: canvas.width, height: 50, color: '#8B4513' },
-    { x: 150, y: 400, width: 120, height: 20, color: '#228B22' },
-    { x: 350, y: 320, width: 100, height: 20, color: '#228B22' },
-    { x: 520, y: 240, width: 120, height: 20, color: '#228B22' },
-    { x: 200, y: 180, width: 100, height: 20, color: '#228B22' },
-    { x: 450, y: 150, width: 80, height: 20, color: '#228B22' },
-    { x: 100, y: 100, width: 100, height: 20, color: '#228B22' },
-    { x: 600, y: 350, width: 150, height: 20, color: '#228B22' }
-];
+// Platforms array - will be initialized dynamically
+const platforms = [];
 
 // Coins array
-const coinsList = [
-    { x: 200, y: 150, width: 20, height: 20, collected: false },
-    { x: 400, y: 290, width: 20, height: 20, collected: false },
-    { x: 570, y: 210, width: 20, height: 20, collected: false },
-    { x: 250, y: 370, width: 20, height: 20, collected: false },
-    { x: 480, y: 120, width: 20, height: 20, collected: false },
-    { x: 650, y: 320, width: 20, height: 20, collected: false },
-    { x: 150, y: 70, width: 20, height: 20, collected: false }
-];
+const coinsList = [];
 
 // Enemies array
-const enemies = [
-    { x: 300, y: 380, width: 30, height: 30, velocityX: 2, minX: 250, maxX: 450 },
-    { x: 550, y: 220, width: 30, height: 30, velocityX: 1.5, minX: 500, maxX: 640 },
-    { x: 150, y: canvas.height - 80, width: 30, height: 30, velocityX: 3, minX: 0, maxX: 400 }
-];
+const enemies = [];
+
+// Initialize game objects based on screen size
+function initGameObjects() {
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // Clear arrays
+    platforms.length = 0;
+    coinsList.length = 0;
+    enemies.length = 0;
+
+    // Ground platform
+    platforms.push({ x: 0, y: h - 50, width: w, height: 50, color: '#8B4513' });
+
+    // Floating platforms - responsive positions
+    platforms.push({ x: w * 0.15, y: h * 0.70, width: w * 0.25, height: 20, color: '#228B22' });
+    platforms.push({ x: w * 0.45, y: h * 0.55, width: w * 0.20, height: 20, color: '#228B22' });
+    platforms.push({ x: w * 0.70, y: h * 0.42, width: w * 0.25, height: 20, color: '#228B22' });
+    platforms.push({ x: w * 0.25, y: h * 0.32, width: w * 0.20, height: 20, color: '#228B22' });
+    platforms.push({ x: w * 0.55, y: h * 0.25, width: w * 0.18, height: 20, color: '#228B22' });
+    platforms.push({ x: w * 0.10, y: h * 0.18, width: w * 0.20, height: 20, color: '#228B22' });
+
+    // Coins - responsive positions
+    coinsList.push({ x: w * 0.25, y: h * 0.26, width: 20, height: 20, collected: false });
+    coinsList.push({ x: w * 0.50, y: h * 0.50, width: 20, height: 20, collected: false });
+    coinsList.push({ x: w * 0.75, y: h * 0.37, width: 20, height: 20, collected: false });
+    coinsList.push({ x: w * 0.30, y: h * 0.65, width: 20, height: 20, collected: false });
+    coinsList.push({ x: w * 0.60, y: h * 0.20, width: 20, height: 20, collected: false });
+    coinsList.push({ x: w * 0.15, y: h * 0.13, width: 20, height: 20, collected: false });
+
+    // Enemies - responsive positions
+    enemies.push({
+        x: w * 0.35, y: h * 0.67, width: 30, height: 30,
+        velocityX: 2, minX: w * 0.15, maxX: w * 0.55
+    });
+    enemies.push({
+        x: w * 0.75, y: h * 0.39, width: 30, height: 30,
+        velocityX: 1.5, minX: w * 0.68, maxX: w * 0.90
+    });
+    enemies.push({
+        x: w * 0.20, y: h - 80, width: 30, height: 30,
+        velocityX: 3, minX: 0, maxX: w * 0.45
+    });
+
+    // Reset player position
+    player.x = 50;
+    player.y = h - 150;
+}
+
+// Initialize objects after canvas is set
+initGameObjects();
 
 // Input handling
 window.addEventListener('keydown', (e) => {
