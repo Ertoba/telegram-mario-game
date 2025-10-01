@@ -9,14 +9,14 @@ const GameConfig = {
     // ===== PHYSICS PARAMETERS =====
     physics: {
         gravity: 2200,              // Gravity acceleration (units/s²)
-        jumpVelocity: -850,         // Initial jump velocity (units/s, negative = up)
+        jumpVelocity: -1050,        // Initial jump velocity (units/s, negative = up) - INCREASED for higher jumps
         maxHorizontalSpeed: 240,    // Maximum horizontal movement speed (units/s)
         horizontalAcceleration: 1200, // Horizontal acceleration when moving
         horizontalDrag: 800,        // Deceleration when no input
 
         // Forgiving jump mechanics
-        coyoteTime: 0.12,          // Seconds after leaving platform where jump still works
-        jumpBufferTime: 0.12,       // Seconds to buffer jump input before landing
+        coyoteTime: 0.15,          // Seconds after leaving platform where jump still works - INCREASED for more forgiveness
+        jumpBufferTime: 0.15,       // Seconds to buffer jump input before landing - INCREASED
         shortJumpMultiplier: 0.5,   // Jump cut multiplier for short taps
         variableJumpThreshold: 0.12 // Time threshold for short vs long jump (seconds)
     },
