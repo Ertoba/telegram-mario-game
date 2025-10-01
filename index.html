@@ -45,7 +45,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: linear-gradient(to bottom, #5c94fc, #87ceeb);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -59,19 +59,162 @@
             display: none;
         }
 
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+        /* Mario-style pixel character */
+        .mario-loader {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin-bottom: 30px;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .mario-body {
+            width: 40px;
+            height: 40px;
+            background: #FF0000;
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            border-radius: 4px;
+            animation: marioJump 0.8s ease-in-out infinite;
+        }
+
+        .mario-head {
+            width: 40px;
+            height: 24px;
+            background: #FFD700;
+            position: absolute;
+            bottom: 52px;
+            left: 20px;
+            border-radius: 4px 4px 0 0;
+            animation: marioJump 0.8s ease-in-out infinite;
+        }
+
+        .mario-cap {
+            width: 44px;
+            height: 16px;
+            background: #FF0000;
+            position: absolute;
+            bottom: 70px;
+            left: 18px;
+            border-radius: 6px 6px 0 0;
+            animation: marioJump 0.8s ease-in-out infinite;
+        }
+
+        .mario-legs {
+            width: 16px;
+            height: 20px;
+            background: #0000FF;
+            position: absolute;
+            bottom: 0;
+            animation: marioJump 0.8s ease-in-out infinite;
+        }
+
+        .mario-legs.left {
+            left: 24px;
+        }
+
+        .mario-legs.right {
+            right: 20px;
+        }
+
+        /* Coins animation */
+        .coin {
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            position: absolute;
+            animation: coinFloat 2s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        .coin::after {
+            content: '';
+            width: 15px;
+            height: 15px;
+            background: #FFA500;
+            border-radius: 50%;
+            position: absolute;
+            top: 7.5px;
+            left: 7.5px;
+        }
+
+        .coin:nth-child(1) { top: 30%; left: 20%; animation-delay: 0s; }
+        .coin:nth-child(2) { top: 50%; right: 15%; animation-delay: 0.3s; }
+        .coin:nth-child(3) { bottom: 25%; left: 15%; animation-delay: 0.6s; }
+        .coin:nth-child(4) { top: 20%; right: 25%; animation-delay: 0.9s; }
+
+        @keyframes marioJump {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+
+        @keyframes coinFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(180deg); }
+        }
+
+        .loading-text {
+            font-family: 'Arial Black', Arial, sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 3px 3px 0px #000000;
+            animation: pulse 1.5s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            animation: dotPulse 1.5s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Dragon silhouette */
+        .dragon-silhouette {
+            position: absolute;
+            bottom: 10%;
+            right: 10%;
+            font-size: 80px;
+            opacity: 0.3;
+            animation: dragonBreath 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.5));
+        }
+
+        @keyframes dragonBreath {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.1); }
+        }
+
+        /* Platform at bottom */
+        .loading-platform {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: #8B4513;
+            border-top: 5px solid #654321;
         }
 
         /* Prevent pull-to-refresh and overscroll */
@@ -82,8 +225,31 @@
 </head>
 <body>
     <div id="loading">
-        <div class="spinner"></div>
-        <div>Loading...</div>
+        <!-- Floating coins -->
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+        <div class="coin"></div>
+
+        <!-- Mario character jumping -->
+        <div class="mario-loader">
+            <div class="mario-cap"></div>
+            <div class="mario-head"></div>
+            <div class="mario-body"></div>
+            <div class="mario-legs left"></div>
+            <div class="mario-legs right"></div>
+        </div>
+
+        <!-- Loading text -->
+        <div class="loading-text">
+            LOADING<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+        </div>
+
+        <!-- Dragon silhouette -->
+        <div class="dragon-silhouette">🐉</div>
+
+        <!-- Platform -->
+        <div class="loading-platform"></div>
     </div>
 
     <div id="game-container"></div>
